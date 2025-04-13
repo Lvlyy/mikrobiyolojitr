@@ -369,19 +369,20 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Admin Panel Stilleri */
         .admin-panel {
-    position: fixed;
-    bottom: 20px; /* Alt tarafta 20px mesafe */
-    left: 20px;   /* Sol tarafta 20px mesafe */
-    background: #e74c3c;
-    color: white;
-    padding: 15px;
-    border-radius: 8px;
-    display: none;
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    width: 250px;
-}
+            position: fixed;
+            bottom: 50px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            width: 250px;
+        }
 
         .admin-toggle {
             position: fixed;
@@ -885,7 +886,7 @@
             }
         }
 
-        // Firebase'den skorları çek
+        // FIREBASE'DEN SKORLARI ÇEK (GÜNCELLENMİŞ)
 async function loadScoresFromFirebase() {
     try {
         const scoresRef = window.firebaseDatabase.ref(window.firebaseDatabase.db, 'scores');
@@ -904,10 +905,10 @@ async function loadScoresFromFirebase() {
         
     } catch(error) {
         logDebug(`Firebase skor yükleme hatası: ${error.message}`);
-        showError(`Skorlar yüklenirken hata oluştu: ${error.message}`);
         throw error;
     }
 }
+
         // TARİH FORMATLAMA (DÜZELTİLMİŞ)
 function formatDate(timestamp) {
     const date = new Date(timestamp);
@@ -967,7 +968,7 @@ function formatDate(timestamp) {
                 logDebug(`HATA DETAYI: ${err.stack}`);
             }
         }
-// Skor tablosunu güncelle
+// SKOR TABLOSUNU GÜNCELLE (DÜZELTİLMİŞ)
 async function updateScoreboard() {
     try {
         document.getElementById('loadingScores').style.display = 'block';
