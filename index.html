@@ -886,24 +886,22 @@
             }
         }
 
-        // FIREBASE'DEN SKORLARI ÇEK (DÜZELTİLMİŞ)
+        // FIREBASE'DEN SKORLARI ÇEK (GÜNCELLENMİŞ)
 async function loadScoresFromFirebase() {
     try {
         const scoresRef = window.firebaseDatabase.ref(window.firebaseDatabase.db, 'scores');
         const snapshot = await window.firebaseDatabase.get(scoresRef);
         
-        const scoresData = snapshot.val();
-        const scores = [];
-        
-        if(scoresData) {
-            Object.keys(scoresData).forEach(key => {
-                scores.push({
-                    id: key,
-                    ...scoresData[key]
-                });
-            });
+        if (!snapshot.exists()) {
+            logDebug("Firebase'de kayıtlı skor bulunamadı");
+            return [];
         }
-        return scores;
+        
+        const scoresData = snapshot.val();
+        return Object.keys(scoresData).map(key => ({
+            id: key,
+            ...scoresData[key]
+        }));
         
     } catch(error) {
         logDebug(`Firebase skor yükleme hatası: ${error.message}`);
@@ -970,16 +968,14 @@ function formatDate(timestamp) {
                 logDebug(`HATA DETAYI: ${err.stack}`);
             }
         }
-// SKOR TABLOSUNU GÜNCELLE (YENİ EKLENEN KISIM)
+// SKOR TABLOSUNU GÜNCELLE (DÜZELTİLMİŞ)
 async function updateScoreboard() {
     try {
         document.getElementById('loadingScores').style.display = 'block';
         const scores = await loadScoresFromFirebase();
         
-        scores.sort((a, b) => {
-            if (b.score !== a.score) return b.score - a.score;
-            return b.timestamp - a.timestamp;
-        });
+        // Skorları sırala (önce yüksek puan, sonra tarih)
+        scores.sort((a, b) => b.score - a.score || b.timestamp - a.timestamp);
 
         const tbody = document.getElementById('scoreboardBody');
         tbody.innerHTML = '';
@@ -1001,11 +997,10 @@ async function updateScoreboard() {
         });
         
         document.getElementById('loadingScores').style.display = 'none';
-        logDebug("Skor tablosu güncellendi");
         
     } catch(err) {
-        showError("Skor tablosu yüklenirken hata oluştu!");
-        logDebug(`Skor tablosu hatası: ${err.message}`);
+        showError("Skor tablosu yüklenirken hata oluştu! Lütfen internet bağlantınızı kontrol edin.");
+        logDebug(`Skor tablosu hatası: ${err.stack}`);
     }
 }
 
@@ -1138,14 +1133,6 @@ async function updateScoreboard() {
             });
             
             clearScoresBtn.addEventListener('click', clearAllScores);
-        }
-
-   // AYARLARI YÜKLE (DÜZELTİLMİŞ)
-function loadSettings() {
-    try {
-        // localStorage erişim kontrolü
-        if(!window.localStorage) {
-            throw new Error("Tarayıcınız yerel depolamayı desteklemiyor");
         }
         
         // Tema ayarı
